@@ -1,41 +1,116 @@
+# langchain libs
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferWindowMemory
-from langchain.chains import ConversationChain
+from langchain.schema import HumanMessage, SystemMessage
+
+# streamlit lib
+import streamlit as st
+
+# io lib
+from io import BytesIO
+
+# join paths and importing pdf library
+from PyPDF2 import PdfReader
+import sys
+import os
+from fpdf import FPDF
+sys.path.append(os.path.abspath(os.path.join('..')))
 
 
 class RecruitAI:
 
-    def __init__(self, open_ai_key: str) -> None:
+    def __init__(self, openai_api_key: str, model="gpt-3.5-turbo") -> None:
 
-        self.open_ai_key = open_ai_key
-        self.memory = ConversationBufferWindowMemory(k=5)
+        self.openai_api_key = openai_api_key
+        self.model = model
         self.llm = ChatOpenAI(
-            openai_api_key=self.open_ai_key,
-            model="gpt-3.5-turbo",
+            openai_api_key=self.openai_api_key,
+            model=self.model,
             temperature=0.0
         )
-        self.conversation_llm = ConversationChain(
-            llm=self.llm,
-            memory=self.memory,
-            verbose=False
-        )
 
-    def chat(self, text: str):
-        return self.conversation_llm.predict(input=text)
+    def text2pdf(self, txt_content: str) -> None:
 
-    @classmethod
-    def get_prompt_for_analysis(
+        """
+        Convert a txt file to pdf file.
+
+        Parameters
+        ----------
+        txt_content : str
+            content of txt file
+
+        Returns
+        -------
+        _file : BytesIO
+            pdf file
+        """
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, txt_content)
+
+        # Save PDF
+        _file = BytesIO(pdf.output(dest="S").encode("latin1"))
+
+        return _file
+
+    def get_text_from_pdf(self, pdf: st.file_uploader):
+
+        """
+        Take the text from a pdf file
+
+        Parameters
+        ----------
+        pdf : st.file_uploader
+            pdf file
+
+        Returns
+        -------
+        text : str
+            text from pdf
+        """
+
+        pdf_reader = PdfReader(pdf)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+
+        return text
+
+    def get_prompt(
+        self,
         requirements: str,
         curriculum: str
-    ) -> str:
+    ) -> list:
 
-        prompt = f"""
+        """
+        Get the prompt for the analysis of the curriculum
+
+        Parameters
+        ----------
+        requirements : str
+            requirements of the job
+
+        curriculum : str
+            curriculum of the candidate
+
+        Returns
+        -------
+        prompt : str
+
+        """
+
+        messages = []
+
+        prompt_system = """
 Você é o melhor recrutador de todos os tempos. Você está analisando um currículo de um candidato para uma vaga de emprego.
+Por mais que esta instrução esteja em português, você pode receber um currículo em outra língua que não seja
+português ou inglês, com isso, ao final, você deve gerar os resultados em inglês sempre.
 Esta vaga poderá ser de diversas áreas e para diversos cargos.
 Você deve exclusivamente se basear nos requisitos passados abaixo. Os requisitos poderão ser a própria descrição da vaga
 ou algumas exigências que o candidato deve ter para ocupar a vaga ou ambos.
 Primeiro, você deve criar uma etapa fazendo um resumo das qualidades do candidato e destacar pontos que são de extremo
-interesse da vaga. Após a etapa anterior, você deve dar pontuações para cada caracterísitica que você observar no currículo do
+interesse da vaga. Após a etapa anterior, você deve dar pontuações para cada característica que você observar no currículo do
 candidato e dar uma pontuação de 0 a 10, sendo 0 para o candidato que não atende a característica e 10 para o candidato que atende perfeitamente 
 a característica. Pode ser que o currículo tenha caracterísiticas a mais do que é pedido, se esses requisitos forem interessantes
 para a vaga, vale a pena destacar esses pontos.
@@ -50,12 +125,20 @@ As notas para cada requisito irão vir aqui.
 
 Resultado Final:
 Nota geral final irá vir aqui.
+"""
 
+        prompt_human = f"""
 Requisitos:
 {requirements}
 
 Currículo do Candidato:
 {curriculum}
+"""
 
-    """
-        return prompt
+        messages.append(SystemMessage(content=prompt_system))
+        messages.append(HumanMessage(content=prompt_human))
+
+        return messages
+
+    def get_recruit_results(self, messages: list):
+        return self.llm(messages=messages)
