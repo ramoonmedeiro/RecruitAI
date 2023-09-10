@@ -1,17 +1,31 @@
 import streamlit as st
 import sys
 import os
+from dotenv import load_dotenv, find_dotenv
 sys.path.append(os.path.abspath(os.path.join('..')))
-from src.utils import get_text_from_pdf, txt2pdf  # noqa: E402
+from src.recruitai import RecruitAI  # noqa: E402
+
+# Find env vars.
+load_dotenv(find_dotenv())
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 st.set_page_config(page_title='RecruitAI')
 
-rad = st.sidebar.radio('Browse the items', ['About RecruitAI', 'TXT to PDF', 'Analysis', "Creator"])
+recruit_ai = RecruitAI(openai_api_key=openai_api_key)
+rad = st.sidebar.radio(
+    'Browse the items',
+    [
+        "About RecruitAI",
+        "TXT to PDF",
+        "Analysis",
+        "Creator"
+    ]
+)
 
 if rad == 'About RecruitAI':
     st.title("Welcome to RecruitAI! :nerd_face:")
     st.markdown("""Are you ready to transform the way you find the best talent for your team? Introducing RecruitAI, a revolution in the candidate selection process!""")
-    st.title("""What is RecruitAI?""")
+    st.subheader("""What is RecruitAI?""")
     st.markdown("""RecruitAI is a powerful and innovative PDF resume analysis tool designed to simplify and streamline the candidate screening process. With cutting-edge artificial intelligence and an intuitive interface, RecruitAI lets you identify ideal candidates efficiently and accurately.""")
     st.markdown("""Explore in the following items and discovery how RecruitAI can help you! :star-struck:""")
 
@@ -25,54 +39,75 @@ if rad == "TXT to PDF":
         )
 
     if txt_file:
+        st.markdown("""
+            We know that many CVs and job descriptions are delivered in TXT
+            format. Therefore, this tab is for you to be able to convert the
+            TXT file to PDF. It's super easy, try it below:
+            """)
         st.markdown("Click on the button below to convert the TXT file to PDF")
-        txt_str = txt_file.getvalue().decode("utf-8")
+        txt_str = txt_file.read()
 
         if st.button("Convert"):
-            st.markdown(txt_str)
-            pdf_output = txt2pdf(
-                txt_content=txt_str,
-                output_pdf_path=txt_file.name
+            pdf_bytes = recruit_ai.text2pdf(
+                txt_content=txt_str
                 )
 
             st.success("File converted successfully!")
+            name_pdf = txt_file.name.split(".")[0] + ".pdf"
 
             st.download_button(
-                label="Clique aqui para baixar o PDF",
-                data=txt_file.name,
-                key="download_button",
-                args={'key': 'value'},
-                help="Clique para baixar o PDF",
-                            )
+                label="Click to download the pdf file",
+                data=pdf_bytes,
+                file_name=name_pdf,
+                key="pdf"
+                )
+
+    else:
+        st.warning("Please, choose a TXT file")
 
 if rad == "Analysis":
-    st.markdown("Below, choose a job description and a curriculum file, respectively, to see how RecruitAI works.")
+    st.markdown("""Below, choose a job description and a curriculum file,
+                respectively, to see how RecruitAI works.
+                """)
 
-    job_description = st.file_uploader(
-        "Choose a job description file",
-        type=['pdf', 'txt'],
-        accept_multiple_files=False
-        )
+    col1, col2 = st.columns(2)
 
-    curriculum = st.file_uploader(
-        "Choose a curriculum file",
-        type=['pdf', 'txt'],
-        accept_multiple_files=False
-        )
+    with col1:
+        job_description = st.file_uploader(
+            "Choose a job description file",
+            type=['pdf'],
+            accept_multiple_files=False
+            )
 
-    if curriculum is not None and job_description is not None:
+    with col2:
+        curriculum = st.file_uploader(
+            "Choose a curriculum file",
+            type=['pdf'],
+            accept_multiple_files=False
+            )
 
-        if curriculum.name.split(".")[-1] == 'pdf':
-            curriculum_text = get_text_from_pdf(curriculum)
+    if job_description and curriculum:
+        job_description_str = recruit_ai.get_text_from_pdf(job_description)
+        curriculum_str = recruit_ai.get_text_from_pdf(curriculum)
+        analyze = st.button("Analyze")
+        st.markdown("Below, you can see the analysis of the curriculum file.")
+        st.markdown("The analysis is based on the job description file.")
 
-        if job_description.name.split(".")[-1] == 'pdf':
-            job_description_text = get_text_from_pdf(job_description)
+        if analyze:
 
-        if curriculum.name.split(".")[-1] == 'txt':
-            pass
+            messages = recruit_ai.get_prompt(
+                requirements=job_description_str,
+                curriculum=curriculum_str
+                )
 
-        if job_description.name.split(".")[-1] == 'txt':
-            pass
+            response = recruit_ai.llm(messages)
+            response_pdf = recruit_ai.text2pdf(txt_content=response.content)
+            st.download_button(
+                        label="Click to download the pdf file",
+                        data=response_pdf,
+                        file_name="results.pdf",
+                        key="pdf"
+                        )
 
 
 if rad == "Creator":
