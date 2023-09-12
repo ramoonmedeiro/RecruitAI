@@ -1,6 +1,7 @@
 import streamlit as st
 import sys
 import os
+import base64
 from dotenv import load_dotenv, find_dotenv
 sys.path.append(os.path.abspath(os.path.join('..')))
 from src.recruitai import RecruitAI  # noqa: E402
@@ -32,6 +33,12 @@ if rad == 'About RecruitAI':
 if rad == "TXT to PDF":
 
     st.title("Choose the TXT file to convert to PDF")
+    st.markdown("""
+            We know that many CVs and job descriptions are delivered in TXT
+            format. Therefore, this tab is for you to be able to convert the
+            TXT file to PDF. It's super easy, try it below. * PS: this part
+            does not use the IA ​​model.
+            """)
     txt_file = st.file_uploader(
         "Choose a TXT file",
         type=['txt'],
@@ -39,13 +46,9 @@ if rad == "TXT to PDF":
         )
 
     if txt_file:
-        st.markdown("""
-            We know that many CVs and job descriptions are delivered in TXT
-            format. Therefore, this tab is for you to be able to convert the
-            TXT file to PDF. It's super easy, try it below:
-            """)
         st.markdown("Click on the button below to convert the TXT file to PDF")
         txt_str = txt_file.read()
+        txt_str = txt_str.decode('utf-8')
 
         if st.button("Convert"):
             pdf_bytes = recruit_ai.text2pdf(
@@ -55,12 +58,14 @@ if rad == "TXT to PDF":
             st.success("File converted successfully!")
             name_pdf = txt_file.name.split(".")[0] + ".pdf"
 
-            st.download_button(
-                label="Click to download the pdf file",
-                data=pdf_bytes,
-                file_name=name_pdf,
-                key="pdf"
-                )
+            with open(name_pdf, "wb") as f:
+                f.write(pdf_bytes.getbuffer())
+            with open(name_pdf, "rb") as f:
+                bytes = f.read()
+                b64 = base64.b64encode(bytes).decode()
+                pdf_display = f'<iframe src="data:application/pdf;base64,{b64}" width="800" height="800" type="application/pdf"></iframe>'
+
+                st.markdown(pdf_display, unsafe_allow_html=True)
 
     else:
         st.warning("Please, choose a TXT file")
@@ -90,8 +95,6 @@ if rad == "Analysis":
         job_description_str = recruit_ai.get_text_from_pdf(job_description)
         curriculum_str = recruit_ai.get_text_from_pdf(curriculum)
         analyze = st.button("Analyze")
-        st.markdown("Below, you can see the analysis of the curriculum file.")
-        st.markdown("The analysis is based on the job description file.")
 
         if analyze:
 
@@ -99,16 +102,20 @@ if rad == "Analysis":
                 requirements=job_description_str,
                 curriculum=curriculum_str
                 )
+            with st.status("Analyzing resume, it won't take long, believe me :nerd_face:"):
 
-            response = recruit_ai.llm(messages)
-            response_pdf = recruit_ai.text2pdf(txt_content=response.content)
-            st.download_button(
-                        label="Click to download the pdf file",
-                        data=response_pdf,
-                        file_name="results.pdf",
-                        key="pdf"
-                        )
+                response = recruit_ai.llm(messages)
+            response_pdf_bytes = recruit_ai.text2pdf(txt_content=response.content)
 
+            final_named_pdf = "results.pdf"
+            with open(final_named_pdf, "wb") as f:
+                f.write(response_pdf_bytes.getbuffer())
+            with open(final_named_pdf, "rb") as f:
+                bytes = f.read()
+                b64 = base64.b64encode(bytes).decode()
+                pdf_display = f'<iframe src="data:application/pdf;base64,{b64}" width="800" height="800" type="application/pdf"></iframe>'
+
+                st.markdown(pdf_display, unsafe_allow_html=True)
 
 if rad == "Creator":
     st.title("Creator: Ramon Medeiro")
