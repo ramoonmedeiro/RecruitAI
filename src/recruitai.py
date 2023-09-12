@@ -46,7 +46,7 @@ class RecruitAI:
 
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", size=12)
+        pdf.set_font("Arial", size=10)
         pdf.multi_cell(0, 10, txt_content)
 
         # Save PDF
@@ -110,10 +110,11 @@ Esta vaga poderá ser de diversas áreas e para diversos cargos.
 Você deve exclusivamente se basear nos requisitos passados abaixo. Os requisitos poderão ser a própria descrição da vaga
 ou algumas exigências que o candidato deve ter para ocupar a vaga ou ambos.
 Primeiro, você deve criar uma etapa fazendo um resumo das qualidades do candidato e destacar pontos que são de extremo
-interesse da vaga. Após a etapa anterior, você deve dar pontuações para cada característica que você observar no currículo do
+interesse da vaga. Pode ser que o currículo tenha caracterísiticas a mais do que é pedido, se esses requisitos forem interessantes
+para a vaga, vale a pena destacar esses pontos. Após a etapa anterior, você deve dar pontuações para cada característica que você observar no currículo do
 candidato e dar uma pontuação de 0 a 10, sendo 0 para o candidato que não atende a característica e 10 para o candidato que atende perfeitamente 
-a característica. Pode ser que o currículo tenha caracterísiticas a mais do que é pedido, se esses requisitos forem interessantes
-para a vaga, vale a pena destacar esses pontos.
+a característica, nessa etapa, você exclusivamente parear com os requisitos da vaga, devolvendo o nome da característica 
+da vaga e a pontuação do candidato para essa característica, sem mais e nem menos.
 Ao final, você deverá dar uma nota final geral (também entre 0 a 10) deste candidato se baseando nas pontuações anteriores.
 
 O resultado deve ser da forma:
