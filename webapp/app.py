@@ -1,6 +1,6 @@
 import streamlit as st
 import base64
-from recruitai import RecruitAI  # noqa: E402
+from recruitai import RecruitAI
 
 st.set_page_config(page_title='RecruitAI')
 
@@ -128,10 +128,12 @@ try:
         st.markdown("""I created this project also with the intention of participating in the streamlit hackathon about LLMs.""")
         st.markdown("""If you want to know more about me, please visit my [LinkedIn](https://www.linkedin.com/in/ramon-medeiro-767722246/) or my [GitHub](https://github.com/ramoonmedeiro).""")
 
-except Exception:
+except Exception as e:
     st.error(
         """Please enter your API key. If you have already entered, the error
         is possibly in your credits or in relation to another part of the
         application. Contact me (r.medeiro10@gmail.com) if the error
         persists"""
         )
+
+    st.error(e)
