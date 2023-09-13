@@ -12,8 +12,8 @@ from io import BytesIO
 from PyPDF2 import PdfReader
 import sys
 import os
-from fpdf import FPDF
-sys.path.append(os.path.abspath(os.path.join('..')))
+sys.path.append(os.path.abspath(os.path.join('.')))
+from .pdf import PDF   # E402
 
 
 class RecruitAI:
@@ -28,7 +28,7 @@ class RecruitAI:
             temperature=0.0
         )
 
-    def text2pdf(self, txt_content: str) -> None:
+    def text2pdf(self, txt_content: str, with_header: bool = True) -> None:
 
         """
         Convert a txt file to pdf file.
@@ -37,6 +37,9 @@ class RecruitAI:
         ----------
         txt_content : str
             content of txt file
+        
+        figure_logo : bool
+            if True, add logo in pdf file
 
         Returns
         -------
@@ -44,12 +47,9 @@ class RecruitAI:
             pdf file
         """
 
-        pdf = FPDF()
+        pdf = PDF(with_header=with_header)
         pdf.add_page()
-        pdf.set_font("Arial", size=10)
-        pdf.multi_cell(0, 10, txt_content)
-
-        # Save PDF
+        pdf.add_text(txt_content)
         _file = BytesIO(pdf.output(dest="S").encode("latin1"))
 
         return _file
@@ -113,7 +113,7 @@ Primeiro, você deve criar uma etapa fazendo um resumo das qualidades do candida
 interesse da vaga. Pode ser que o currículo tenha caracterísiticas a mais do que é pedido, se esses requisitos forem interessantes
 para a vaga, vale a pena destacar esses pontos. Após a etapa anterior, você deve dar pontuações para cada característica que você observar no currículo do
 candidato e dar uma pontuação de 0 a 10, sendo 0 para o candidato que não atende a característica e 10 para o candidato que atende perfeitamente 
-a característica, nessa etapa, você exclusivamente parear com os requisitos da vaga, devolvendo o nome da característica 
+a característica, nessa etapa, você exclusivamente parear com os requisitos da vaga, devolvendo o nome da característica
 da vaga e a pontuação do candidato para essa característica, sem mais e nem menos.
 Ao final, você deverá dar uma nota final geral (também entre 0 a 10) deste candidato se baseando nas pontuações anteriores.
 
