@@ -10,10 +10,7 @@ from io import BytesIO
 
 # join paths and importing pdf library
 from PyPDF2 import PdfReader
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join('.')))
-from .pdf import PDF   # E402
+from pdf import PDF
 
 
 class RecruitAI:

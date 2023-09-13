@@ -1,9 +1,6 @@
 import streamlit as st
-import sys
-import os
 import base64
-sys.path.append(os.path.abspath(os.path.join('..')))
-from src.recruitai import RecruitAI  # noqa: E402
+from recruitai import RecruitAI  # noqa: E402
 
 st.set_page_config(page_title='RecruitAI')
 
