@@ -6,7 +6,7 @@ authors = ["Ramon Medeiro <r.medeiro10@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "3.9.18"
 langchain = "^0.0.281"
 openai = "^0.28.0"
 tiktoken = "^0.4.0"
