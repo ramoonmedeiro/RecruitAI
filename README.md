@@ -1,8 +1,9 @@
-# Introduction
-
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/102380417/184778671-4e6a71a6-3482-42f0-9f14-a6d3ccee16bf.png" width="450px" />
+  <img src="https://github.com/ramoonmedeiro/RecruitAI/assets/102380417/ca30c3f7-d7de-412a-9e2d-534fbc31b3b9" width="450px" />
 </div>
+
+
+# Introduction
 
 RecruitAI is a powerful and innovative PDF resume analysis tool designed to simplify and streamline the candidate screening process. With cutting-edge artificial intelligence and an intuitive interface, RecruitAI lets you identify ideal candidates efficiently and accurately.
 
