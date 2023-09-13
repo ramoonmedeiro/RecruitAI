@@ -9,7 +9,7 @@ class PDF(FPDF):
 
     def header(self):
         if self.with_header:
-            self.image("logo_recruit_ai.png", 150, 10, 40)
+            self.image("webapp/logo_recruit_ai.png", 150, 10, 40)
 
     def footer(self):
         self.set_y(-15)
