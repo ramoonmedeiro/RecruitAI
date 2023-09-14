@@ -21,7 +21,7 @@ Then just click on analyze and BOOM, a pdf will be generated for you containing 
 
 # Where to use?
 
-You can test it now at the following link (the link has not yet been generated, but I will post it soon)
+You can test it now at the <a href="https://recruitai.streamlit.app/">link</a>
 
 But you can also use it locally. You need first install poetry:
 ```
@@ -49,4 +49,4 @@ And that's it, the application will be running on your localhost (http://localho
 
 I'm always looking for new challenges and i'm creating this project to help people understand how to insert GenAI in different fields of application. I created this project also with the intention of participating in the streamlit hackathon about LLMs.
 
-If you want to know more about me, please visit my <a href="https://www.linkedin.com/in/ramon-medeiro-767722246/">LinkedIn</a>
+If you want to know more about me, please visit my <a href="https://www.linkedin.com/in/ramon-medeiro-767722246/">LinkedIn</a>.
