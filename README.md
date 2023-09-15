@@ -23,14 +23,21 @@ Then just click on analyze and BOOM, a pdf will be generated for you containing 
 
 You can test it now at the <a href="https://recruitai.streamlit.app/" target="_blank">link</a>
 
-But you can also use it locally. You need first install poetry:
+But you can also use it locally. Regardless of the methods below, you must clone this repository:
+
+```
+$ git clone https://github.com/ramoonmedeiro/RecruitAI.git
+```
+
+## Via poetry
+
+You need first install poetry:
 ```
 $ pip install poetry
 ```
 Then, you need clone this repository and follow the following steps:
 
 ```
-$ git clone https://github.com/ramoonmedeiro/RecruitAI.git
 $ cd RecruitAI/
 $ poetry shell
 $ poetry install
@@ -43,7 +50,39 @@ $ cd webapp/
 $ streamlit run app.py
 ```
 
-And that's it, the application will be running on your localhost (http://localhost:8501/)
+The application will be running on your localhost (http://localhost:8501/).
+
+## Via virtualenv and derivatives
+
+You can use the virtual environment of your choice (mkvirtualenv, pipenv, etc.)
+I will use venv here.
+
+First you will create a virtual environment and must install the project dependencies:
+
+```
+$ cd RecruitAI/webapp/
+$ python3 -m venv <name-of-your-virtual-env>
+$ source <name-of-your-virtual-env>/bin/activate
+$ pip3 install -r requirements.txt
+```
+
+Then just run the streamlit server:
+```
+$ cd webapp/
+$ streamlit run app.py
+```
+
+The application will be running on your localhost (http://localhost:8501/).
+
+## Via docker
+
+You can also run the application docker locally.
+
+```
+$ cd RecruitAI/
+$ docker build . -t recuritai:1.0
+$ docker container run -d -p 8501:8501 recuritai:1.0
+```
 
 # Final considerations
 
