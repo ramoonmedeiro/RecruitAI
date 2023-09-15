@@ -464,5 +464,4 @@ OpenCover/
 junit/
 
 poetry.lock
-*.txt
 *.pdf
