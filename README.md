@@ -35,7 +35,7 @@ You need first install poetry:
 ```
 $ pip install poetry
 ```
-Then, you need clone this repository and follow the following steps:
+Then, you need follow the following steps:
 
 ```
 $ cd RecruitAI/
@@ -54,7 +54,7 @@ The application will be running on your localhost (http://localhost:8501/).
 
 ## Via virtualenv and derivatives
 
-You can use the virtual environment of your choice (mkvirtualenv, pipenv, etc.)
+You can use the virtual environment of your choice (mkvirtualenv, pipenv, etc).
 I will use venv here.
 
 First you will create a virtual environment and must install the project dependencies:
@@ -83,6 +83,8 @@ $ cd RecruitAI/
 $ docker build . -t recuritai:1.0
 $ docker container run -d -p 8501:8501 recuritai:1.0
 ```
+
+The application will be running on your localhost (http://localhost:8501/).
 
 # Final considerations
 
